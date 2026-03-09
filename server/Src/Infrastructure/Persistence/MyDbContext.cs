@@ -27,6 +27,7 @@ public class MyDbContext(DbContextOptions<MyDbContext> options) : DbContext(opti
     public DbSet<Farm>  Farms => Set<Farm>();
     public DbSet<Telemetry>  Telemetries => Set<Telemetry>();
     public DbSet<Turbine> Turbines => Set<Turbine>();
+    public DbSet<TelemetryAlert> TelemetryAlerts => Set<TelemetryAlert>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -70,6 +71,16 @@ public class MyDbContext(DbContextOptions<MyDbContext> options) : DbContext(opti
 
             // Index for querying timeseries by farm, turbine and timestamp
             entity.HasIndex(e => new { e.FarmId, e.TurbineInternalId, Timestamp = e.TimeStamp });
+        });
+
+        modelBuilder.Entity<TelemetryAlert>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.HasOne<Turbine>()
+                .WithMany()
+                .HasForeignKey(e => e.TurbineInternalId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

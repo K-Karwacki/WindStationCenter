@@ -14,13 +14,14 @@ public class IotController(
     MyDbContext db,
     IFarmRepository farmRepository,
     ITurbineRepository turbineRepository,
-    ITelemetryDataRepository telemetryDataRepository
+    ITelemetryDataRepository telemetryDataRepository,
+    ITelemetryAlertRepository telemetryAlertRepository
     ) : MqttController
 {
     [MqttRoute("farm/my-awesome-farm/windmill/{turbineId}/telemetry")]
     public async Task ListenForMeasurements(Telemetry telemetryData, string turbineId)
     {
-        logger.LogInformation(JsonSerializer.Serialize(telemetryData));
+       // logger.LogInformation(JsonSerializer.Serialize(telemetryData));
         Console.WriteLine(turbineId);
         
         // Determine farm external id (devices sometimes send FarmId as a Guid in payload)
@@ -81,5 +82,60 @@ public class IotController(
         };
         
         await telemetryDataRepository.AddAsync(telemetry);
+    }
+
+    [MqttRoute("farm/my-awesome-farm/windmill/{turbineId}/alert")]
+    public async Task ListenForAlerts(TelemetryAlert telemetryAlert, string turbineId)
+    {
+        logger.LogInformation(JsonSerializer.Serialize(telemetryAlert));
+        Console.WriteLine(turbineId);
+        
+        // Determine farm external id (devices sometimes send FarmId as a Guid in payload)
+        var farmExternalId = telemetryAlert.FarmId;
+        
+        // Ensure farm exists
+        Farm farm;
+        try
+        {
+            farm = await farmRepository.GetFarmByExternalIdAsync(farmExternalId);
+        }
+        catch (EntityNotFoundException e)
+        {
+            farm = await farmRepository.AddAsync(new Farm
+            {
+                ExternalId = farmExternalId,
+                Name = $"Auto-created {farmExternalId}"
+            });
+        }
+
+        // Ensure turbine exists and is associated with the farm
+        Turbine turbine;
+        try
+        {
+            turbine = await turbineRepository.GetTurbineByExternalIdAsync(turbineId);
+        }
+        catch (EntityNotFoundException  e)
+        {
+            turbine = await turbineRepository.AddAsync(new Turbine
+            {
+                TurbineExternalId = turbineId,
+                Farm = farm,
+                Name = $"Auto-created {turbineId}",
+                Location = ""
+            });
+        }
+
+        var alert = new TelemetryAlert
+        {
+            TurbineInternalId = turbine.Id,
+            TurbineId = telemetryAlert.TurbineId,
+            FarmId = telemetryAlert.FarmId,
+            TimeStamp = telemetryAlert.TimeStamp,
+            Severity = telemetryAlert.Severity,
+            Message = telemetryAlert.Message
+        };
+        
+        await telemetryAlertRepository.AddAsync(alert);
+
     }
 }
