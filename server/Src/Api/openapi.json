@@ -154,6 +154,36 @@
         }
       }
     },
+    "/api/realtime/GetTelemetryAlert": {
+      "get": {
+        "tags": [
+          "Realtime"
+        ],
+        "operationId": "Realtime_GetTelemetryAlert",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RealtimeListenResponseOfListOfTelemetryAlert"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/realtime/sse": {
       "get": {
         "tags": [
@@ -318,6 +348,57 @@
         "additionalProperties": false,
         "properties": {
           "group": {
+            "type": "string"
+          }
+        }
+      },
+      "RealtimeListenResponseOfListOfTelemetryAlert": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeListenResponse"
+          },
+          {
+            "type": "object",
+            "description": "Returned by subscribe endpoints with initial data. The client receives the current state\nimmediately and knows which SSE group to listen on for subsequent updates.",
+            "additionalProperties": false,
+            "properties": {
+              "data": {
+                "type": "array",
+                "nullable": true,
+                "items": {
+                  "$ref": "#/components/schemas/TelemetryAlert"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "TelemetryAlert": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "turbineInternalId": {
+            "type": "string",
+            "format": "guid"
+          },
+          "turbineId": {
+            "type": "string"
+          },
+          "farmId": {
+            "type": "string"
+          },
+          "timeStamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "severity": {
+            "type": "string"
+          },
+          "message": {
             "type": "string"
           }
         }

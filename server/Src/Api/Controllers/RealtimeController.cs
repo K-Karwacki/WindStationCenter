@@ -27,4 +27,15 @@ public class RealtimeController(ISseBackplane backplane,
             query: async context => context.Telemetries.ToList());
         return new RealtimeListenResponse<List<Telemetry>>(group, db.Telemetries.ToList());
     }
+
+    [HttpGet(nameof(GetTelemetryAlert))]
+    public async Task<RealtimeListenResponse<List<TelemetryAlert>>> GetTelemetryAlert(string connectionId)
+    {
+        var group = "alerts";
+        await backplane.Groups.AddToGroupAsync(connectionId, group);
+        realtimeManager.Subscribe<MyDbContext>(connectionId, group, 
+            criteria: snapshot => snapshot.HasChanges<TelemetryAlert>(),
+            query: async context => context.TelemetryAlerts.ToList());
+        return new RealtimeListenResponse<List<TelemetryAlert>>(group, db.TelemetryAlerts.ToList());
+    }
 }
