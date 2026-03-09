@@ -28,6 +28,10 @@ public record SetBladePitchCommand : MqttPublishCommand
 {
     public readonly string Action = "setPitch";
     public required double Angle { get; set; }
+
+    public SetBladePitchCommand(double angle)
+    {
+    }
 }
 
 public record SetReportingIntervalCommand : MqttPublishCommand
