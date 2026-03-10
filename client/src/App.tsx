@@ -9,7 +9,7 @@ import { useAtom } from 'jotai';
 import { authAtom } from '@core/atoms/authAtoms';
 import { authApi } from '@core/controllers/authApi';
 import { StateleSSEClient } from 'statele-sse';
-import { RealtimeClient } from './generated-ts-client';
+import { RealtimeClient, StationClient } from './generated-ts-client';
 import RealtimeComponent from '@ui/components/RealtimeComponent';
 import { Dashboard } from '@ui/pages/Dashboard';
 import RedirectIfAuthenticated from './ui/components/RedirectIfAuthenticated';
@@ -33,7 +33,7 @@ const router = createBrowserRouter([
         path: '/dashboard',
         element: (
           <ProtectedRoute>
-            <Dashboard />
+            <Dashboard stationControllerClient={new StationClient()} />
           </ProtectedRoute>
         ),
       },

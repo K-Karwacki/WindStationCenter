@@ -6,7 +6,7 @@ public sealed record User
 {
     public Guid Id { get; init; } = Guid.NewGuid();
 
-    public RoleType Role { get; set; } = RoleType.User;
+    public RoleType Role { get; set; } = RoleType.Maintenance;
     
     public required string FirstName { get; set; }
     public required string LastName { get; set; }
@@ -29,7 +29,7 @@ public sealed record User
         string lastName,
         string email,
         byte[] passwordHash,
-        RoleType role = RoleType.User)
+        RoleType role = RoleType.Maintenance)
     {
         return new User
         {

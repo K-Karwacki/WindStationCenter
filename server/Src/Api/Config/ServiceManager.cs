@@ -224,6 +224,9 @@ public sealed class ServiceManager(IServiceCollection services, AppSettings appS
         });
 
         services.AddSingleton<MqttPublisher>();
+        // Telemetry buffer and flusher to reduce write frequency
+        services.AddSingleton<Services.TelemetryBuffer>();
+        services.AddHostedService<Services.TelemetryBufferFlusher>();
         
         Console.WriteLine("Mqtt configuration loaded.");
     }

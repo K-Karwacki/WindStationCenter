@@ -70,7 +70,7 @@ public class MyDbContext(DbContextOptions<MyDbContext> options) : DbContext(opti
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Index for querying timeseries by farm, turbine and timestamp
-            entity.HasIndex(e => new { e.FarmId, e.TurbineInternalId, Timestamp = e.TimeStamp });
+            entity.HasIndex(e => new { e.FarmId, e.TurbineInternalId, Timestamp = e.Timestamp });
         });
 
         modelBuilder.Entity<TelemetryAlert>(entity =>

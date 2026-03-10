@@ -4,7 +4,6 @@ namespace Domain.Enums;
 
 public enum RoleType
 {
-    User,
-    Crew,
+    Maintenance,
     Admin
 }

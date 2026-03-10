@@ -34,7 +34,7 @@ public sealed class UserRepositoryTests(MyDbContextFixture fixture) : IAsyncLife
             firstName: "Johnny",
             lastName: "Green",
             email: "DonJohnny@wp.pl",
-            role: RoleType.User,
+            role: RoleType.Maintenance,
             passwordHash: [1, 2, 3]
             );
         

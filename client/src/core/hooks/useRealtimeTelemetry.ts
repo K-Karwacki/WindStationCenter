@@ -15,6 +15,7 @@ export function useRealtimeTelemetry(sse: StateleSSEClient, realtimeClient: Real
             },
             (data) => {
                 data.forEach(telemetry => {
+                    // console.log("Received telemetry:", telemetry);
                     pushTelemetry(telemetry);
                 });
             }

@@ -2,13 +2,14 @@ using System.Diagnostics.Metrics;
 using Application.DTOs.Entities;
 using Domain.Entities.IoT;
 using Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StateleSSE.AspNetCore;
 using StateleSSE.AspNetCore.EfRealtime;
 using StateleSSE.AspNetCore.GroupRealtime;
 
 namespace Api.Controllers;
-
+[Authorize]
 [Route("api/realtime")]
 public class RealtimeController(ISseBackplane backplane,
     IRealtimeManager realtimeManager,
@@ -18,14 +19,14 @@ public class RealtimeController(ISseBackplane backplane,
 {
     
     [HttpGet(nameof(GetTelemetryDataRealtime))]
-    public async Task<RealtimeListenResponse<List<Telemetry>>> GetTelemetryDataRealtime(string connectionId)
+    public async Task<RealtimeListenResponse<List<TelemetryDto>>> GetTelemetryDataRealtime(string connectionId)
     {
         const string group = "measurements";
         await backplane.Groups.AddToGroupAsync(connectionId, group);
         realtimeManager.Subscribe<MyDbContext>(connectionId, group, 
             criteria: snapshot => snapshot.HasChanges<Telemetry>(),
             query: async context => context.Telemetries.ToList());
-        return new RealtimeListenResponse<List<Telemetry>>(group, db.Telemetries.ToList());
+        return new RealtimeListenResponse<List<TelemetryDto>>(group, db.Telemetries.Select(t=> TelemetryDto.Map(t)).ToList());
     }
 
     [HttpGet(nameof(GetTelemetryAlertsRealtime))]

@@ -146,12 +146,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RealtimeListenResponseOfListOfTelemetry"
+                  "$ref": "#/components/schemas/RealtimeListenResponseOfListOfTelemetryDto"
                 }
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/realtime/GetTelemetryAlertsRealtime": {
@@ -181,7 +186,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/realtime/sse": {
@@ -194,7 +204,40 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/station/GetTurbines": {
+      "get": {
+        "tags": [
+          "Station"
+        ],
+        "operationId": "Station_GetTurbines",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TurbineDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     }
   },
@@ -237,17 +280,15 @@
         "type": "integer",
         "description": "",
         "x-enumNames": [
-          "User",
-          "Crew",
+          "Maintenance",
           "Admin"
         ],
         "enum": [
           0,
-          1,
-          2
+          1
         ]
       },
-      "RealtimeListenResponseOfListOfTelemetry": {
+      "RealtimeListenResponseOfListOfTelemetryDto": {
         "allOf": [
           {
             "$ref": "#/components/schemas/RealtimeListenResponse"
@@ -261,84 +302,82 @@
                 "type": "array",
                 "nullable": true,
                 "items": {
-                  "$ref": "#/components/schemas/Telemetry"
+                  "$ref": "#/components/schemas/TelemetryDto"
                 }
               }
             }
           }
         ]
       },
-      "Telemetry": {
+      "TelemetryDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          },
-          "farmInternalId": {
-            "type": "string",
-            "format": "guid"
-          },
           "farmId": {
-            "type": "string"
-          },
-          "turbineInternalId": {
             "type": "string",
-            "format": "guid"
+            "nullable": true
           },
           "turbineId": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "turbineName": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "timeStamp": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "nullable": true
           },
           "windSpeed": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "nullable": true
           },
           "windDirection": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "nullable": true
           },
           "ambientTemperature": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "nullable": true
           },
           "rotorSpeed": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "nullable": true
           },
           "powerOutput": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "nullable": true
           },
           "nacelleDirection": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "nullable": true
           },
           "bladePitch": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "nullable": true
           },
           "generatorTemp": {
             "type": "number",
-            "format": "double"
-          },
-          "gearboxTemp": {
-            "type": "number",
-            "format": "double"
+            "format": "double",
+            "nullable": true
           },
           "vibration": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "nullable": true
           },
           "status": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           }
         }
       },
@@ -400,6 +439,24 @@
           },
           "message": {
             "type": "string"
+          }
+        }
+      },
+      "TurbineDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "turbineExternalId": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "location": {
+            "type": "string",
+            "nullable": true
           }
         }
       }

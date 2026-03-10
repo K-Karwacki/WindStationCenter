@@ -68,9 +68,9 @@ public class AuthController(IAuthFeature authFeature, AppSettings appSettings) :
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterUserCommand registerRequest)
     {
-        if (User.Identity is { IsAuthenticated: false } || User.Identity is { IsAuthenticated: true } && User.IsInRole(nameof(RoleType.User)))
+        if (User.Identity is { IsAuthenticated: false } || ( User.Identity is { IsAuthenticated: true } && User.IsInRole(nameof(RoleType.Maintenance))))
         {
-            if (registerRequest.Role is RoleType.Admin or RoleType.Crew)
+            if (registerRequest.Role is RoleType.Admin)
             {
                 return Unauthorized("You are not authorized to register this user.");
             } 
@@ -80,21 +80,7 @@ public class AuthController(IAuthFeature authFeature, AppSettings appSettings) :
                 return Ok(registerResult);
             }
         }
-
-        if (User.IsInRole(nameof(RoleType.Crew)))
-        {
-            if (registerRequest.Role is RoleType.Admin or RoleType.User)
-            {
-                return Unauthorized("You are not authorized to register this user.");
-            }
-            
-            var registerResult = await authFeature.HandleRegisterUser(registerRequest);
-            if (registerResult.IsSuccess)
-            {
-                return Ok(registerResult);
-            }
-        }
-
+        
         if (User.IsInRole(nameof(RoleType.Admin)))
         {
             var registerResult = await authFeature.HandleRegisterUser(registerRequest);

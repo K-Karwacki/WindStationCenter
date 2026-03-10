@@ -72,7 +72,6 @@ public class Program
         using (var scope = app.Services.CreateScope())
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<MyDbContext>();
-            await dbContext.Database.MigrateAsync();
             var pendingMigrations = await dbContext.Database.GetPendingMigrationsAsync();
             var migrations = pendingMigrations as string[] ?? pendingMigrations.ToArray();
             if (migrations.Length != 0)

@@ -188,7 +188,7 @@ export class RealtimeClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    getTelemetryDataRealtime(connectionId: string | undefined): Promise<RealtimeListenResponseOfListOfTelemetry> {
+    getTelemetryDataRealtime(connectionId: string | undefined): Promise<RealtimeListenResponseOfListOfTelemetryDto> {
         let url_ = this.baseUrl + "/api/realtime/GetTelemetryDataRealtime?";
         if (connectionId === null)
             throw new globalThis.Error("The parameter 'connectionId' cannot be null.");
@@ -208,13 +208,13 @@ export class RealtimeClient {
         });
     }
 
-    protected processGetTelemetryDataRealtime(response: Response): Promise<RealtimeListenResponseOfListOfTelemetry> {
+    protected processGetTelemetryDataRealtime(response: Response): Promise<RealtimeListenResponseOfListOfTelemetryDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as RealtimeListenResponseOfListOfTelemetry;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as RealtimeListenResponseOfListOfTelemetryDto;
             return result200;
             });
         } else if (status !== 200 && status !== 204) {
@@ -222,7 +222,7 @@ export class RealtimeClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<RealtimeListenResponseOfListOfTelemetry>(null as any);
+        return Promise.resolve<RealtimeListenResponseOfListOfTelemetryDto>(null as any);
     }
 
     getTelemetryAlertsRealtime(connectionId: string | undefined): Promise<RealtimeListenResponseOfListOfTelemetryAlert> {
@@ -293,6 +293,50 @@ export class RealtimeClient {
     }
 }
 
+export class StationClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    getTurbines(): Promise<TurbineDto[]> {
+        let url_ = this.baseUrl + "/api/station/GetTurbines";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetTurbines(_response);
+        });
+    }
+
+    protected processGetTurbines(response: Response): Promise<TurbineDto[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as TurbineDto[];
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<TurbineDto[]>(null as any);
+    }
+}
+
 export interface LoginCommand {
     email?: string;
     password?: string;
@@ -307,9 +351,8 @@ export interface RegisterUserCommand {
 }
 
 export enum RoleType {
-    User = 0,
-    Crew = 1,
-    Admin = 2,
+    Maintenance = 0,
+    Admin = 1,
 }
 
 /** Returned by subscribe endpoints so the client knows which SSE group to listen on. */
@@ -318,29 +361,25 @@ export interface RealtimeListenResponse {
 }
 
 /** Returned by subscribe endpoints with initial data. The client receives the current state immediately and knows which SSE group to listen on for subsequent updates. */
-export interface RealtimeListenResponseOfListOfTelemetry extends RealtimeListenResponse {
-    data?: Telemetry[] | undefined;
+export interface RealtimeListenResponseOfListOfTelemetryDto extends RealtimeListenResponse {
+    data?: TelemetryDto[] | undefined;
 }
 
-export interface Telemetry {
-    id?: string;
-    farmInternalId?: string;
-    farmId?: string;
-    turbineInternalId?: string;
-    turbineId?: string;
-    turbineName?: string;
-    timeStamp?: string;
-    windSpeed?: number;
-    windDirection?: number;
-    ambientTemperature?: number;
-    rotorSpeed?: number;
-    powerOutput?: number;
-    nacelleDirection?: number;
-    bladePitch?: number;
-    generatorTemp?: number;
-    gearboxTemp?: number;
-    vibration?: number;
-    status?: string;
+export interface TelemetryDto {
+    farmId?: string | undefined;
+    turbineId?: string | undefined;
+    turbineName?: string | undefined;
+    timeStamp?: string | undefined;
+    windSpeed?: number | undefined;
+    windDirection?: number | undefined;
+    ambientTemperature?: number | undefined;
+    rotorSpeed?: number | undefined;
+    powerOutput?: number | undefined;
+    nacelleDirection?: number | undefined;
+    bladePitch?: number | undefined;
+    generatorTemp?: number | undefined;
+    vibration?: number | undefined;
+    status?: string | undefined;
 }
 
 /** Returned by subscribe endpoints with initial data. The client receives the current state immediately and knows which SSE group to listen on for subsequent updates. */
@@ -356,6 +395,12 @@ export interface TelemetryAlert {
     timeStamp?: string;
     severity?: string;
     message?: string;
+}
+
+export interface TurbineDto {
+    turbineExternalId?: string | undefined;
+    name?: string | undefined;
+    location?: string | undefined;
 }
 
 export interface FileResponse {
