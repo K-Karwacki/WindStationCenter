@@ -17,10 +17,10 @@ public class RealtimeController(ISseBackplane backplane,
 ) : RealtimeControllerBase(backplane)
 {
     
-    [HttpGet(nameof(GetTelemetry))]
-    public async Task<RealtimeListenResponse<List<Telemetry>>> GetTelemetry(string connectionId)
+    [HttpGet(nameof(GetTelemetryDataRealtime))]
+    public async Task<RealtimeListenResponse<List<Telemetry>>> GetTelemetryDataRealtime(string connectionId)
     {
-        var group = "measurements";
+        const string group = "measurements";
         await backplane.Groups.AddToGroupAsync(connectionId, group);
         realtimeManager.Subscribe<MyDbContext>(connectionId, group, 
             criteria: snapshot => snapshot.HasChanges<Telemetry>(),
@@ -28,10 +28,10 @@ public class RealtimeController(ISseBackplane backplane,
         return new RealtimeListenResponse<List<Telemetry>>(group, db.Telemetries.ToList());
     }
 
-    [HttpGet(nameof(GetTelemetryAlert))]
-    public async Task<RealtimeListenResponse<List<TelemetryAlert>>> GetTelemetryAlert(string connectionId)
+    [HttpGet(nameof(GetTelemetryAlertsRealtime))]
+    public async Task<RealtimeListenResponse<List<TelemetryAlert>>> GetTelemetryAlertsRealtime(string connectionId)
     {
-        var group = "alerts";
+        const string group = "alerts";
         await backplane.Groups.AddToGroupAsync(connectionId, group);
         realtimeManager.Subscribe<MyDbContext>(connectionId, group, 
             criteria: snapshot => snapshot.HasChanges<TelemetryAlert>(),

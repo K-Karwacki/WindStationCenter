@@ -124,12 +124,12 @@
         ]
       }
     },
-    "/api/realtime/GetTelemetry": {
+    "/api/realtime/GetTelemetryDataRealtime": {
       "get": {
         "tags": [
           "Realtime"
         ],
-        "operationId": "Realtime_GetTelemetry",
+        "operationId": "Realtime_GetTelemetryDataRealtime",
         "parameters": [
           {
             "name": "connectionId",
@@ -154,12 +154,12 @@
         }
       }
     },
-    "/api/realtime/GetTelemetryAlert": {
+    "/api/realtime/GetTelemetryAlertsRealtime": {
       "get": {
         "tags": [
           "Realtime"
         ],
-        "operationId": "Realtime_GetTelemetryAlert",
+        "operationId": "Realtime_GetTelemetryAlertsRealtime",
         "parameters": [
           {
             "name": "connectionId",

@@ -188,8 +188,8 @@ export class RealtimeClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    getTelemetry(connectionId: string | undefined): Promise<RealtimeListenResponseOfListOfTelemetry> {
-        let url_ = this.baseUrl + "/api/realtime/GetTelemetry?";
+    getTelemetryDataRealtime(connectionId: string | undefined): Promise<RealtimeListenResponseOfListOfTelemetry> {
+        let url_ = this.baseUrl + "/api/realtime/GetTelemetryDataRealtime?";
         if (connectionId === null)
             throw new globalThis.Error("The parameter 'connectionId' cannot be null.");
         else if (connectionId !== undefined)
@@ -204,11 +204,11 @@ export class RealtimeClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetTelemetry(_response);
+            return this.processGetTelemetryDataRealtime(_response);
         });
     }
 
-    protected processGetTelemetry(response: Response): Promise<RealtimeListenResponseOfListOfTelemetry> {
+    protected processGetTelemetryDataRealtime(response: Response): Promise<RealtimeListenResponseOfListOfTelemetry> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -225,8 +225,8 @@ export class RealtimeClient {
         return Promise.resolve<RealtimeListenResponseOfListOfTelemetry>(null as any);
     }
 
-    getTelemetryAlert(connectionId: string | undefined): Promise<RealtimeListenResponseOfListOfTelemetryAlert> {
-        let url_ = this.baseUrl + "/api/realtime/GetTelemetryAlert?";
+    getTelemetryAlertsRealtime(connectionId: string | undefined): Promise<RealtimeListenResponseOfListOfTelemetryAlert> {
+        let url_ = this.baseUrl + "/api/realtime/GetTelemetryAlertsRealtime?";
         if (connectionId === null)
             throw new globalThis.Error("The parameter 'connectionId' cannot be null.");
         else if (connectionId !== undefined)
@@ -241,11 +241,11 @@ export class RealtimeClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetTelemetryAlert(_response);
+            return this.processGetTelemetryAlertsRealtime(_response);
         });
     }
 
-    protected processGetTelemetryAlert(response: Response): Promise<RealtimeListenResponseOfListOfTelemetryAlert> {
+    protected processGetTelemetryAlertsRealtime(response: Response): Promise<RealtimeListenResponseOfListOfTelemetryAlert> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {

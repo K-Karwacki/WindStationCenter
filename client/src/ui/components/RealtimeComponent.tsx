@@ -1,34 +1,15 @@
-import { pushTelemetryAtom } from "@core/atoms/telemetryAtoms";
-import { useAtom } from "jotai";
-import { useEffect } from "react";
-import { RealtimeClient } from "../../generated-ts-client";
-import { StateleSSEClient } from "statele-sse";
+import { type RealtimeClient } from "../../generated-ts-client";
+import { type StateleSSEClient } from "statele-sse";
+import { useRealtimeTelemetry } from "@core/hooks/useRealtimeTelemetry";
+import { useRealtimeAlerts } from "@core/hooks/useRealtimeAlerts";
 
-const API_ENDPOINT = "api/realtime";
+interface RealtimeComponentProps {
+    sse: StateleSSEClient;
+    realtimeClient: RealtimeClient;
+}
 
-const sse = new StateleSSEClient(`${API_ENDPOINT}/sse`);
-const realtimeClient = new RealtimeClient();
-
-
-export default function RealtimeComponent() {
-    const [, pushTelemetry] = useAtom(pushTelemetryAtom);
-
-    useEffect(() => {
-    sse.listen(async (id) => {
-      const result = await realtimeClient.getTelemetry(id);
-      return result;
-    }, (data) => {
-        data.forEach(telemetry => {
-            pushTelemetry(telemetry);
-            console.log("Received telemetry:", telemetry); // Debug log for received telemetry
-        });
-    });
-    }, []);
-
-    return (
-        <div>
-            <h2>Realtime Component</h2>
-            <p>This component will handle real-time updates using the generated RealtimeClient.</p>
-        </div>
-    );
+export default function RealtimeComponent(props: RealtimeComponentProps) {
+    useRealtimeTelemetry(props.sse, props.realtimeClient);
+    useRealtimeAlerts(props.sse, props.realtimeClient);
+    return <></>;
 }

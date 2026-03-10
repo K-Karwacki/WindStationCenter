@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -28,6 +30,12 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+}
+
+/* Ensure app uses full viewport width and avoid horizontal scroll */
+html, body, #root {
+  width: 100vw;
+  overflow-x: hidden;
 }
 
 h1 {

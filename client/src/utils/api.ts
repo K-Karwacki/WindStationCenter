@@ -123,7 +123,7 @@ export async function api<T>(
       throw new ApiError(401, 'Session expired. Please log in again.');
     }
 
-    let errorMessage = `HTTP ${response.status}`;
+    let errorMessage = `${response.status}`;
 
     try {
       const contentType = response.headers.get('content-type');
