@@ -23,28 +23,63 @@ public class TelemetryAlertRepository(MyDbContext dbContext) : ITelemetryAlertRe
         }
     }
 
-    public Task<bool> DeleteAsync(TelemetryAlert entity)
+    public async Task<bool> DeleteAsync(TelemetryAlert entity)
     {
-        throw new NotImplementedException();
+        try
+        {
+            dbContext.TelemetryAlerts.Remove(entity);
+            await dbContext.SaveChangesAsync();
+            return true;
+        }
+        catch (DbUpdateException e)
+        {
+            throw new RepositoryException(e.Message, e);
+        }    }
+
+    public async Task<bool> DeleteAsync(Guid id)
+    {
+        try
+        {
+            var existing = await dbContext.TelemetryAlerts.FirstOrDefaultAsync(t => t.Id == id);
+            if (existing == null)
+                return false;
+
+            dbContext.TelemetryAlerts.Remove(existing);
+            await dbContext.SaveChangesAsync();
+            return true;
+        }
+        catch (DbUpdateException e)
+        {
+            throw new RepositoryException(e.Message, e);
+        }
     }
 
-    public Task<bool> DeleteAsync(Guid id)
+    public async Task<TelemetryAlert> FindByIdAsync(Guid id)
     {
-        throw new NotImplementedException();
+        var telemetryAlert = await dbContext.TelemetryAlerts.FirstOrDefaultAsync(t => t.Id == id);
+        return telemetryAlert ?? throw new EntityNotFoundException("Alert not found");
     }
 
-    public Task<TelemetryAlert> FindByIdAsync(Guid id)
+    public async Task<IEnumerable<TelemetryAlert>> GetAllAsync()
     {
-        throw new NotImplementedException();
+        return await dbContext.TelemetryAlerts.ToListAsync();
     }
 
-    public Task<IEnumerable<TelemetryAlert>> GetAllAsync()
+    public async Task<bool> UpdateAsync(TelemetryAlert entity)
     {
-        throw new NotImplementedException();
-    }
+        try
+        {
+            var existing = await dbContext.TelemetryAlerts.FirstOrDefaultAsync(t => t.Id == entity.Id);
+            if (existing == null)
+                throw new EntityNotFoundException("Alert not found");
 
-    public Task<bool> UpdateAsync(TelemetryAlert entity)
-    {
-        throw new NotImplementedException();
+            dbContext.Entry(existing).CurrentValues.SetValues(entity);
+            await dbContext.SaveChangesAsync();
+            return true;
+        }
+        catch (DbUpdateException e)
+        {
+            throw new RepositoryException($"Failed to update alert: {e.Message}", e);
+        }
     }
 }

@@ -369,7 +369,7 @@ export interface TelemetryDto {
     farmId?: string | undefined;
     turbineId?: string | undefined;
     turbineName?: string | undefined;
-    timeStamp?: string | undefined;
+    timestamp?: string | undefined;
     windSpeed?: number | undefined;
     windDirection?: number | undefined;
     ambientTemperature?: number | undefined;
