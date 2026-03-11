@@ -42,9 +42,9 @@ public record SetBladePitchCommand : MqttPublishCommand
 {
     public readonly string Action = "setPitch";
     /// has to be between 0 and 30
-    public required float Angle { get; set; }
+    public required double Angle { get; set; }
 
-    public SetBladePitchCommand(float angle)
+    public SetBladePitchCommand(double angle)
     {
         if (angle < 0 || angle > 30)
             throw new ArgumentOutOfRangeException(nameof(angle), angle, "Angle has to be between 0 and 30");

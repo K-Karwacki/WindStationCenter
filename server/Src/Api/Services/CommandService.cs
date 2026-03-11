@@ -60,7 +60,7 @@ public class CommandService(
         {
             "start"       => new StartTurbineCommand(),
             "stop"        => new StopTurbineCommand { Reason = command.Reason! },
-            "setPitch"    => new SetBladePitchCommand((float)request.PitchAngle!)
+            "setPitch"    => new SetBladePitchCommand((double)request.PitchAngle!)
             {
                 Angle = 0
             },

@@ -10,7 +10,7 @@ public class Command
     public DateTime Timestamp { get; set; }
     public required string Action { get; set; }
     public int? IntervalSeconds { get; set; }
-    public float? PitchAngle { get; set; }
+    public double? PitchAngle { get; set; }
     public string? Reason { get; set; }
     
     public User? User { get; set; }
