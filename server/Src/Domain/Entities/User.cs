@@ -14,6 +14,7 @@ public sealed record User
 
     public required string Email { get; set; }
     public byte[] PasswordHash { get; set; } = null!;
+    public ICollection<Command> Commands { get; set; } = [];
     public string RefreshToken { get; set; } = string.Empty;
     public DateTime RefreshTokenExpires { get; set; } 
     

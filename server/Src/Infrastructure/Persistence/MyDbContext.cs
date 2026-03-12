@@ -28,11 +28,21 @@ public class MyDbContext(DbContextOptions<MyDbContext> options) : DbContext(opti
     public DbSet<Telemetry>  Telemetries => Set<Telemetry>();
     public DbSet<Turbine> Turbines => Set<Turbine>();
     public DbSet<TelemetryAlert> TelemetryAlerts => Set<TelemetryAlert>();
+    public DbSet<Command> Commands => Set<Command>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         
-        modelBuilder.Entity<User>();
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.Email).IsUnique();
+            
+            entity.HasMany(e => e.Commands)
+                .WithOne(c => c.User)
+                .HasForeignKey(c => c.UserInternalId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
         
         // IoT: Farm, Turbine and Telemetry relationships
         modelBuilder.Entity<Farm>(entity =>
@@ -77,6 +87,16 @@ public class MyDbContext(DbContextOptions<MyDbContext> options) : DbContext(opti
         {
             entity.HasKey(e => e.Id);
 
+            entity.HasOne<Turbine>()
+                .WithMany()
+                .HasForeignKey(e => e.TurbineInternalId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Command>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            
             entity.HasOne<Turbine>()
                 .WithMany()
                 .HasForeignKey(e => e.TurbineInternalId)
