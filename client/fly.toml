@@ -1,4 +1,9 @@
-app = 'incident-tracker-client'
+# fly.toml app configuration file generated for wind-station-client on 2026-03-13T00:24:52+01:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'wind-station-client'
 primary_region = 'lhr'
 
 [build]
@@ -15,3 +20,4 @@ primary_region = 'lhr'
   memory = '256mb'
   cpu_kind = 'shared'
   cpus = 1
+  memory_mb = 256

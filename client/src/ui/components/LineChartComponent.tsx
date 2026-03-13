@@ -36,6 +36,8 @@ export default function LineChartComponent({ data = [], title, height = 300, col
       .map((p, i) => {
         const rawTime = p.time ?? p.timestamp ?? p.timeStamp ?? i;
         const epochMs = parseToMs(rawTime as any);
+        // const epochMs = rawTime instanceof Date ? rawTime.getTime() : NaN;
+        // console.log(`Parsed time for raw value "${rawTime}" is:`, epochMs);
         const value = p.value == null ? null : Number(p.value);
         return { epochMs, value };
       })
@@ -49,28 +51,30 @@ export default function LineChartComponent({ data = [], title, height = 300, col
   }, [data]);
 
   return (
-    <div>
-      {title && <h3 className="text-lg font-medium mb-2">{title}</h3>}
-      <div style={{ width: '100%', height }}>
-        {normalized.length === 0 ? (
-          <div className="flex h-full items-center justify-center text-sm text-slate-500">No data</div>
-        ) : (
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={normalized}>
-              <CartesianGrid stroke="#e6e6e6" strokeDasharray="3 3" />
-              <XAxis
-                dataKey="time"
-                type="number"
-                domain={["dataMin", "dataMax"]}
-                tick={{ fill: '#374151' }}
-                tickFormatter={(val) => new Date(val).toLocaleTimeString()}
-              />
-              <YAxis tick={{ fill: '#374151' }} />
-              <Tooltip labelFormatter={(val) => new Date(Number(val)).toLocaleString()} />
-              <Line type="monotone" dataKey="value" stroke={color} strokeWidth={2} dot={false} />
-            </LineChart>
-          </ResponsiveContainer>
-        )}
+    <div className="card bg-base-100 shadow p-2">
+      <div className="card-body p-2">
+        {title && <h3 className="card-title text-base mb-2">{title}</h3>}
+        <div style={{ width: '500px', height }}>
+          {normalized.length === 0 ? (
+            <div className="flex h-full items-center justify-center text-sm opacity-60">No data</div>
+          ) : (
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={normalized}>
+                <CartesianGrid stroke="#e6e6e6" strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="time"
+                  type="number"
+                  domain={["dataMin", "dataMax"]}
+                  tick={{ fill: '#374151' }}
+                  tickFormatter={(val) => new Date(val).toLocaleTimeString()}
+                />
+                <YAxis tick={{ fill: '#374151' }} />
+                <Tooltip labelFormatter={(val) => new Date(Number(val)).toLocaleString()} />
+                <Line type="monotone" dataKey="value" stroke={color} strokeWidth={2} dot={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          )}
+        </div>
       </div>
     </div>
   );

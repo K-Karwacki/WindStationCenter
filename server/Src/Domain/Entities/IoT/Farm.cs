@@ -1,6 +1,6 @@
 namespace Domain.Entities.IoT;
 
-public class Farm
+public sealed record Farm
 {
     public Guid Id { get; set; }
     public required string ExternalId { get; set; }

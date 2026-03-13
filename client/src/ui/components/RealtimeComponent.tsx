@@ -11,5 +11,5 @@ interface RealtimeComponentProps {
 export default function RealtimeComponent(props: RealtimeComponentProps) {
     useRealtimeTelemetry(props.sse, props.realtimeClient);
     useRealtimeAlerts(props.sse, props.realtimeClient);
-    return <></>;
+    return <div className="hidden" />;
 }

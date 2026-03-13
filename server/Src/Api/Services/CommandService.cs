@@ -56,22 +56,16 @@ public class CommandService(
 
         await commandRepository.AddAsync(command);
 
-        MqttPublishCommand mqttCommand = request.Action switch
-        {
-            "start"       => new StartTurbineCommand(),
-            "stop"        => new StopTurbineCommand { Reason = command.Reason! },
-            "setPitch"    => new SetBladePitchCommand((double)request.PitchAngle!)
-            {
-                Angle = 0
-            },
-            "setInterval" => new SetReportingIntervalCommand(request.IntervalSeconds!.Value)
-            {
-                Value = 0
-            },
-            _             => throw new InvalidOperationException("Unreachable")
-        };
+        // MqttPublishCommand mqttCommand = request.Action switch
+        // {
+        //     "start"       => new StartTurbineCommand(),
+        //     "stop"        => new StopTurbineCommand { Reason = command.Reason! },
+        //     "setPitch"    => new SetBladePitchCommand((double)request.PitchAngle!),
+        //     "setInterval" => new SetReportingIntervalCommand(request.IntervalSeconds!.Value),
+        //     _             => throw new InvalidOperationException("Unreachable")
+        // };
 
-        await mqttPublisher.PublishCommandAsync(turbine.Farm.ExternalId, turbineId, mqttCommand);
+        // await mqttPublisher.PublishCommandAsync(turbineId, mqttCommand);
 
         return command;
     }
@@ -80,6 +74,7 @@ public class CommandService(
     {
         "setPitch" when request.PitchAngle is null        => "PitchAngle is required for setPitch.",
         "setPitch" when request.PitchAngle is < 0 or > 30 => "PitchAngle must be between 0 and 30.",
+        "stop" when string.IsNullOrWhiteSpace(request.Reason) => "Reason is required for stop.",
         "setInterval" when request.IntervalSeconds is null => "IntervalSeconds is required for setInterval.",
         "setInterval" when request.IntervalSeconds is < 1 or > 60 => "IntervalSeconds must be between 1 and 60.",
         _ => null

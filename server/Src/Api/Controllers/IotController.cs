@@ -1,5 +1,6 @@
 using System.Diagnostics.Metrics;
 using System.Text.Json;
+using Api.Services;
 using Domain.Entities.IoT;
 using Domain.Exceptions;
 using Domain.Interfaces.Repositories;
@@ -16,18 +17,66 @@ public class IotController(
     ITurbineRepository turbineRepository,
     ITelemetryDataRepository telemetryDataRepository,
     ITelemetryAlertRepository telemetryAlertRepository,
-    Api.Services.TelemetryBuffer telemetryBuffer
+    TelemetryBuffer telemetryBuffer
     ) : MqttController
 {
     [MqttRoute("farm/my-awesome-farm/windmill/{turbineId}/telemetry")]
     public async Task ListenForMeasurements(Telemetry telemetryData, string turbineId)
     {
-       // logger.LogInformation(JsonSerializer.Serialize(telemetryData));
+                        var farmExternalId = telemetryData.FarmId.ToString();
 
-       
-        // Instead of persisting every single incoming message, store latest into buffer
-        // The TelemetryBufferFlusher background service will persist the latest entry per turbine every minute.
-        telemetryBuffer.Update(turbineId, telemetryData);
+                        Farm farm;
+                        try
+                        {
+                            farm = await farmRepository.GetFarmByExternalIdAsync(farmExternalId);
+                        }
+                        catch (EntityNotFoundException)
+                        {
+                            farm = await farmRepository.AddAsync(new Farm
+                            {
+                                ExternalId = farmExternalId,
+                                Name = $"Auto-created {farmExternalId}"
+                            });
+                        }
+
+                        Turbine turbine;
+                        try
+                        {
+                            turbine = await turbineRepository.GetTurbineByExternalIdAsync(turbineId);
+                        }
+                        catch (EntityNotFoundException)
+                        {
+                            turbine = await turbineRepository.AddAsync(new Turbine
+                            {
+                                TurbineExternalId = turbineId,
+                                Farm = farm,
+                                Name = $"Auto-created {turbineId}",
+                                Location = ""
+                            });
+                        }
+
+                        var telemetry = new Telemetry
+                        {
+                            FarmId = farmExternalId,
+                            FarmInternalId = farm.Id,
+                            TurbineInternalId = turbine.Id,
+                            TurbineId = telemetryData.TurbineId,
+                            TurbineName = telemetryData.TurbineName,
+                            Timestamp = telemetryData.Timestamp,
+                            WindSpeed = telemetryData.WindSpeed,
+                            WindDirection = telemetryData.WindDirection,
+                            AmbientTemperature = telemetryData.AmbientTemperature,
+                            RotorSpeed = telemetryData.RotorSpeed,
+                            PowerOutput = telemetryData.PowerOutput,
+                            NacelleDirection = telemetryData.NacelleDirection,
+                            BladePitch = telemetryData.BladePitch,
+                            GearboxTemp = telemetryData.GearboxTemp,
+                            GeneratorTemp = telemetryData.GeneratorTemp,
+                            Vibration = telemetryData.Vibration,
+                            Status = telemetryData.Status
+                        };
+
+                        await telemetryDataRepository.AddAsync(telemetry);
     }
 
     [MqttRoute("farm/my-awesome-farm/windmill/{turbineId}/alert")]

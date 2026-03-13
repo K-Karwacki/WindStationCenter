@@ -1,18 +1,20 @@
 using System.Text.Json;
+using Mqtt.Controllers;
 using MQTTnet;
 using MQTTnet.Protocol;
 
 namespace Api.Mqtt;
 
-public class MqttPublisher(IMqttClient client)
+public class MqttPublisher(IMqttClientService client)
 {
 
-    public async Task PublishCommandAsync(string farmId, string turbineId, MqttPublishCommand command)
+    public async Task PublishCommandAsync(string turbineId, MqttPublishCommand command)
     {
-        var topic = $"farms/{farmId}/turbines/{turbineId}/commands";
-        var payload = System.Text.Json.JsonSerializer.Serialize((object)command, new JsonSerializerOptions
+        var topic = $"farm/my-awesome-farm/windmill/{turbineId}/command";
+        var payload = JsonSerializer.Serialize((object)command, new JsonSerializerOptions
         {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            IncludeFields = true
         });
 
         var message = new MqttApplicationMessageBuilder()
@@ -20,8 +22,8 @@ public class MqttPublisher(IMqttClient client)
             .WithPayload(payload)
             .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
             .Build();
-
-        await client.PublishAsync(message);
+        
+        await client.PublishAsync(topic, payload);
     }
 }
 
@@ -29,38 +31,25 @@ public record MqttPublishCommand;
 
 public record StartTurbineCommand : MqttPublishCommand
 {
-    public readonly string Action = "start";
+    public string Action { get; init; } = "start";
 }
 
 public record StopTurbineCommand : MqttPublishCommand
 {
-    public readonly string Action = "stop";
+    public string Action { get; init; } = "stop";
     public required string Reason { get; set; } = "No reason provided";
 }
 
 public record SetBladePitchCommand : MqttPublishCommand
 {
-    public readonly string Action = "setPitch";
+    public string Action { get; init; } = "setPitch";
     /// has to be between 0 and 30
     public required double Angle { get; set; }
-
-    public SetBladePitchCommand(double angle)
-    {
-        if (angle < 0 || angle > 30)
-            throw new ArgumentOutOfRangeException(nameof(angle), angle, "Angle has to be between 0 and 30");
-        Angle = angle;
-    }
 }
 
 public record SetReportingIntervalCommand : MqttPublishCommand
 {
-    public readonly string Action = "setInterval";
+    public string Action { get; init; } = "setInterval";
     ///  has to be between 1 and 60
     public required int Value { get; set; }
-    public SetReportingIntervalCommand(int value)
-    {
-        if (value < 1 || value > 60)
-            throw new ArgumentOutOfRangeException(nameof(value), value, "Value has to be between 1 and 60");
-        Value = value;
-    }
 }

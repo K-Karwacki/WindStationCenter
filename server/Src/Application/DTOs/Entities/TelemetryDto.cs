@@ -16,6 +16,7 @@ public sealed record TelemetryDto
     public double? NacelleDirection { get; set; }
     public double? BladePitch { get; set; }
     public double? GeneratorTemp { get; set; }
+    public double? GearboxTemp { get; set; }
     public double? Vibration { get; set; }
     public string? Status { get; set; }
 
@@ -35,6 +36,7 @@ public sealed record TelemetryDto
             NacelleDirection = telemetry.NacelleDirection,
             BladePitch = telemetry.BladePitch,
             GeneratorTemp = telemetry.GeneratorTemp,
+            GearboxTemp = telemetry.GearboxTemp,
             Vibration = telemetry.Vibration,
             Status = telemetry.Status
         };

@@ -1,6 +1,6 @@
 namespace Domain.Entities.IoT;
 
-public class Turbine
+public sealed record Turbine
 {
     public Guid Id { get; set; }
     public Farm? Farm { get; set; }

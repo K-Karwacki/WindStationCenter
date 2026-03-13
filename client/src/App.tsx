@@ -15,7 +15,7 @@ import { Dashboard } from '@ui/pages/Dashboard';
 import RedirectIfAuthenticated from './ui/components/RedirectIfAuthenticated';
 import NotFound from './ui/pages/NotFound';
 import { Navigate } from 'react-router-dom';
-// import './App.css';
+import './App.css';
 
 
 const router = createBrowserRouter([
@@ -57,6 +57,7 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
+  // useAutoPrune();
   const [auth, setAuth] = useAtom(authAtom)
 
   useEffect(() => {

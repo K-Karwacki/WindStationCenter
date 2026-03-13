@@ -17,27 +17,20 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-sky-700 bg-sky-600 text-white backdrop-blur shadow-sm dark:bg-sky-800/95">
-      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between p-9">
-        <h1 className="font-semibold tracking-tight text-white md:text-lg lg:text-2xl text-4xl!">
-          Wind Farm Control Center
-        </h1>
-
-        {auth.status === "unauthenticated" ? (
-          <a
-            href="/login"
-            className="rounded-md bg-white px-4 py-2 text-sm font-medium text-sky-700 transition hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white/30 block w-[5rem] text-center"
-          >
-            Login
-          </a>
-        ) : (
-          <a
-            onClick={handleLogout}
-            className="rounded-md bg-white px-4 py-2 text-sm font-medium text-sky-700 transition hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white/30 block cursor-pointer w-[5rem] text-center"
-          >
-            Logout
-          </a>
-        )}
+    <header className="w-full sticky top-0 z-40">
+      <div className="navbar bg-primary text-primary-content shadow-md">
+        <div className="container mx-auto px-4">
+          <div className="flex-1">
+            <a className="normal-case text-xl">Wind Farm Control Center</a>
+          </div>
+          <div className="flex-none">
+            {auth.status === "unauthenticated" ? (
+              <a href="/login" className="btn btn-sm btn-ghost">Login</a>
+            ) : (
+              <button onClick={handleLogout} className="btn btn-sm btn-ghost">Logout</button>
+            )}
+          </div>
+        </div>
       </div>
     </header>
   );

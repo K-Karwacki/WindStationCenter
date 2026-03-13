@@ -40,3 +40,38 @@
 .read-the-docs {
   color: #888;
 }
+
+button {
+    /* font-size: 3em; */
+  cursor: pointer;
+  padding: 0.5em 1.5em;
+}
+
+.section-content {
+  /* background: #1a1a1a; */
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn-error{
+  background: red;
+}
+
+.btn-success{
+  background: green;
+}
+
+.btn-active{
+  background: #646cff;
+  color: white;
+}
+
+.btn-ghost{
+  background: gray;
+  color: white;
+  border: 1px solid white;
+}

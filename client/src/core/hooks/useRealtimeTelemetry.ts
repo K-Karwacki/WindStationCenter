@@ -1,23 +1,24 @@
 import { useEffect } from "react";
-import { useAtom } from "jotai";
-import { pushTelemetryAtom } from "@core/atoms/telemetryAtoms";
+import { useSetAtom } from "jotai";
+import { clearTelemetryAtom, setTelemetryBulkAtom } from "@core/atoms/telemetryAtoms";
 import { type StateleSSEClient } from "statele-sse";
 import { type RealtimeClient } from "src/generated-ts-client";
 
 export function useRealtimeTelemetry(sse: StateleSSEClient, realtimeClient: RealtimeClient) {
-    const [, pushTelemetry] = useAtom(pushTelemetryAtom);
+    const clearAll = useSetAtom(clearTelemetryAtom);
+    const setBulk = useSetAtom(setTelemetryBulkAtom);
 
     useEffect(() => {
        sse.listen(
             async (id) => {
                 console.log("Listening for telemetry with id:", id);
-                return await realtimeClient.getTelemetryDataRealtime(id);
+                return (await realtimeClient.getTelemetryDataRealtime(id));
             },
             (data) => {
-                data.forEach(telemetry => {
-                    // console.log("Received telemetry:", telemetry);
-                    pushTelemetry(telemetry);
-                });
+                // Clear existing telemetry and set incoming data in bulk to avoid
+                // iterating and triggering many updates which cause lag.
+                clearAll();
+                setBulk(data ?? []);
             }
         );
     }, []);

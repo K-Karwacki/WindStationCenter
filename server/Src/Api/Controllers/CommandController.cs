@@ -26,7 +26,7 @@ public class CommandController(ICommandService commandService) : BaseController
         catch (EntityNotFoundException e) { return NotFound(e.Message); }
     }
 
-    [HttpPost("{turbineId}/send")][HttpPost("{turbineId}/send")]
+    [HttpPost("{turbineId}/send")]
     public async Task<IActionResult> SendCommand(string turbineId, [FromBody] SendCommandRequest request)
     {
         try

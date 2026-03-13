@@ -42,6 +42,7 @@ public class Program
             Console.WriteLine("✓ Running in Development mode");
             app.UseOpenApi();
             app.UseSwaggerUi();
+            app.GenerateApiClientsFromOpenApi("../../../client/src/generated-ts-client.ts", "./openapi.json").GetAwaiter().GetResult();
         }
         else if(app.Environment.IsProduction())
         {
@@ -85,7 +86,6 @@ public class Program
                 Console.WriteLine("[DB] ✓ Database schema is up to date");
             }
         }
-        app.GenerateApiClientsFromOpenApi("../../../client/src/generated-ts-client.ts", "./openapi.json").GetAwaiter().GetResult();
         
         await app.RunAsync();
     }
