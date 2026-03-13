@@ -1,7 +1,12 @@
+using System.Security.Claims;
 using Api.Mqtt;
 using Application.DTOs.Entities;
+using Domain.Entities;
 using Domain.Entities.IoT;
+using Domain.Exceptions;
+using Domain.Interfaces.Repositories;
 using Infrastructure.Persistence;
+using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +21,9 @@ public class RealtimeController(ISseBackplane backplane,
     IRealtimeManager realtimeManager,
     MyDbContext db,
     IGroupRealtimeManager groupRealtimeManager,
-    MqttPublisher mqttPublisher
+    ITurbineRepository turbineRepository,
+    MqttPublisher mqttPublisher,
+    ICommandRepository commandRepository
 ) : RealtimeControllerBase(backplane)
 {
     
@@ -55,36 +62,107 @@ public class RealtimeController(ISseBackplane backplane,
     [HttpPost(nameof(SendStopCommandToTheTurbine))]
     public async Task<IActionResult> SendStopCommandToTheTurbine(string turbineId, string reason)
     {
-        await mqttPublisher.PublishCommandAsync(turbineId, new StopTurbineCommand
+        try
         {
-            Reason = reason
-        });
-        return Ok();
+            var command = new StopTurbineCommand
+            {
+                Reason = reason
+            };
+            var turbine = await turbineRepository.GetTurbineByExternalIdAsync(turbineId);
+            await commandRepository.AddAsync(new Command
+            {
+                Action = command.Action,
+                TurbineId = turbineId,
+                TurbineInternalId = turbine.Id,
+                Reason = reason,
+            });
+            await mqttPublisher.PublishCommandAsync(turbineId, command);
+            return Ok();
+        }
+        catch (RepositoryException e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     [HttpPost(nameof(SendStartCommandToTheTurbine))]
     public async Task<IActionResult> SendStartCommandToTheTurbine(string turbineId)
     {
-        await mqttPublisher.PublishCommandAsync(turbineId, new StartTurbineCommand());
-        return Ok();
+        try
+        {
+            var command = new StartTurbineCommand();
+            var turbine = await turbineRepository.GetTurbineByExternalIdAsync(turbineId);
+
+            await commandRepository.AddAsync(new Command
+            {
+                Action = command.Action,
+                TurbineId = turbineId,
+                TurbineInternalId = turbine.Id,
+            });
+            await mqttPublisher.PublishCommandAsync(turbineId, command);
+            return Ok();
+        }
+        catch (RepositoryException e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+
     }
 
     [HttpPost(nameof(SendSetIntervalCommandToTheTurbine))]
     public async Task<IActionResult> SendSetIntervalCommandToTheTurbine(string turbineId, int value)
     {
-        await mqttPublisher.PublishCommandAsync(turbineId, new SetReportingIntervalCommand
+        try
         {
-            Value = value
-        });
-        return Ok();
+            var command = new SetReportingIntervalCommand
+            {
+                Value =  value
+            };
+            var turbine = await turbineRepository.GetTurbineByExternalIdAsync(turbineId);
+
+            await commandRepository.AddAsync(new Command
+            {
+                Action = command.Action,
+                IntervalSeconds =  value,
+                TurbineId = turbineId,
+                TurbineInternalId = turbine.Id,
+            });
+            await mqttPublisher.PublishCommandAsync(turbineId, command);
+            return Ok();
+        }
+        catch (RepositoryException e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     public async Task<IActionResult> SendSetBladePitchCommandToTheTurbine(string turbineId, double value)
     {
-        await mqttPublisher.PublishCommandAsync(turbineId, new SetBladePitchCommand
+        try
         {
-            Angle = value
-        });
-        return Ok();
+            var command = new SetBladePitchCommand
+            {
+                Angle = value
+            };
+            var turbine = await turbineRepository.GetTurbineByExternalIdAsync(turbineId);
+
+            await commandRepository.AddAsync(new Command
+            {
+                Action = command.Action,
+                PitchAngle = value,
+                TurbineInternalId = turbine.Id,
+                TurbineId = turbineId,
+            });
+            await mqttPublisher.PublishCommandAsync(turbineId, command);
+            return Ok();
+        }
+        catch (RepositoryException e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 }

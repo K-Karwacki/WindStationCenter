@@ -40,7 +40,7 @@ public class MyDbContext(DbContextOptions<MyDbContext> options) : DbContext(opti
             
             entity.HasMany(e => e.Commands)
                 .WithOne(c => c.User)
-                .HasForeignKey(c => c.UserInternalId)
+                // .HasForeignKey(c => c.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
         

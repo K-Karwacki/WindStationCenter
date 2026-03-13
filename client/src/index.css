@@ -2,7 +2,7 @@
 @plugin "daisyui";
 
 :root {
-  background-color: black;
+  /* background-color: black; */
 }
 
 a {
@@ -31,5 +31,5 @@ html, body, #root {
 
 button{
   cursor: pointer;
-  background: black;
+  /* background: black; */
 }

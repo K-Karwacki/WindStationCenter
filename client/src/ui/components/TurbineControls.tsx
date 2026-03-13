@@ -60,10 +60,12 @@ export default function TurbineControls() {
   }
 
   const onToggle = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    // Capture the button element synchronously to avoid React's event pooling
+    const btn = e.currentTarget;
     setBusy(true);
     try {
-        e.currentTarget.disabled = true; // prevent multiple clicks while processing
-        e.currentTarget.innerText = "Processing...";
+        btn.classList.add('btn-disabled'); // prevent multiple clicks while processing
+        btn.innerText = "Processing...";
         if(running) {
           await realtimeClient.sendStopCommandToTheTurbine(selected, "manualStop");
         } else {
@@ -72,7 +74,8 @@ export default function TurbineControls() {
       toggleRunning(selected);
     } finally {
       setBusy(false);
-      e.currentTarget.disabled = false;
+      btn.classList.remove('btn-disabled');
+      btn.innerText = running ? "Stop" : "Start";
     }
   };
 

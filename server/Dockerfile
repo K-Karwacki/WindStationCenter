@@ -16,4 +16,7 @@ COPY --from=build /app/publish .
 
 EXPOSE 80
 
+# Ensure ASP.NET binds to 0.0.0.0:80 by default inside the container
+ENV ASPNETCORE_URLS="http://0.0.0.0:8080"
+
 ENTRYPOINT ["dotnet", "Api.dll"]
